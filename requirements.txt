@@ -1,4 +1,4 @@
 flask
+gunicorn
 flask-mysqldb
 flask-cors
-gunicorn
