@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <style>
+    body {
+      font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      background: #ecf0f3;
+      margin: 0;
+      padding: 0;
+    }
+    .main-card {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 25px 39px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      text-align: center;
+      color: blueviolet;
+      margin-bottom: 20px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 8px;
+      border: 1px solid #bdc3c7;
+      font-size: 15px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .button-group.top-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+    }
+    .button-group.top-buttons button {
+      background-color:rgb(152, 101, 199);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.1s ease;
+      width: 250px;
+    }
+    .job-card {
+      padding: 20px;
+      margin-bottom: 15px;
+      background-color: #fdfdfd;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+      animation: fadeIn 0.3s ease-in;
+      overflow: auto;
+    }
+    .job-card strong {
+      color: #2c3e50;
+    }
+    .action-buttons-top {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .action-buttons-top button {
+      background-color: #3498db;
+      color: white;
+      font-size: 13px;
+      border-radius: 6px;
+      padding: 6px 14px;
+      border: none;
+      cursor: pointer;
+    }
+    .action-buttons-top button:hover {
+      background-color: #2980b9;
+    }
+    .success {
+      color: black;
+      margin-top: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="main-card">
+    <h1><i class="fas fa-briefcase"></i> Job Tracker</h1>
+
+    <div class="button-group top-buttons">
+      <button type="button" onclick="showAddForm()">Add Job</button>
+      <button type="button" onclick="fetchJobs()">Show Jobs</button>
+    </div>
+
+    <!-- Add Job Form Section -->
+    <div id="addJobSection">
+      <form id="jobForm">
+        <input type="text" id="company" placeholder="Company Name" required />
+        <input type="text" id="role" placeholder="Role" required />
+        <input type="date" id="date" required />
+        <select id="status" required>
+          <option value="">-- Select Status --</option>
+          <option value="applied">Applied</option>
+          <option value="interview">Interview</option>
+          <option value="offered">Offered</option>
+          <option value="pending">Pending</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <textarea id="notes" placeholder="Notes (optional)"></textarea>
+        <p class="success" id="successMsg"></p>
+        
+      </form>
+    </div>
+
+    <!-- Job List Section -->
+    <div id="jobListSection" style="display: none;">
+      <div class="job-section" id="jobList"></div>
+    </div>
+  </div>
+
+  <script>
+    const jobForm = document.getElementById('jobForm');
+    const jobList = document.getElementById('jobList');
+    const successMsg = document.getElementById('successMsg');
+    const addJobSection = document.getElementById('addJobSection');
+    const jobListSection = document.getElementById('jobListSection');
+
+    // Show Add Job Form
+    function showAddForm() {
+      addJobSection.style.display = 'block';
+      jobListSection.style.display = 'none';
+    }
+
+    // Submit Form
+    jobForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const job = {
+        company: document.getElementById('company').value,
+        role: document.getElementById('role').value,
+        date: document.getElementById('date').value,
+        status: document.getElementById('status').value,
+        notes: document.getElementById('notes').value
+      };
+
+      const response = await fetch("http://127.0.0.1:5000/job", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(job)
+      });
+
+      if (response.ok) {
+        successMsg.textContent = "✅ Job added successfully!";
+        jobForm.reset();
+        setTimeout(() => successMsg.textContent = "", 3000);
+      }
+    });
+
+    // Fetch and Show Jobs
+    async function fetchJobs() {
+      addJobSection.style.display = 'none';
+      jobListSection.style.display = 'block';
+
+      const response = await fetch("http://127.0.0.1:5000/job");
+      const jobs = await response.json();
+      jobList.innerHTML = "";
+      jobs.forEach(job => {
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.innerHTML = `
+          <div class="action-buttons-top">
+            <button onclick="deleteJob('${job.id}')">Delete</button>
+          </div>
+          <strong>${job.company}</strong> - ${job.role} <br>
+          <strong>Date:</strong> ${job.date} <br>
+          <strong>Status:</strong> ${job.status} <br>
+          <strong>Notes:</strong> ${job.notes || 'N/A'}
+        `;
+        jobList.appendChild(card);
+      });
+    }
+
+    // Delete Job
+    async function deleteJob(id) {
+      const confirmed = confirm("Are you sure you want to delete this job?");
+      if (confirmed) {
+        const response = await fetch(`http://127.0.0.1:5000/job/${id}`, {
+          method: "DELETE"
+        });
+        if (response.ok) {
+          fetchJobs();
+        } else {
+          alert("Failed to delete job.");
+        }
+      }
+    }
+
+    // Show Add Form by default on page load
+    showAddForm();
+  </script>
+</body>
+</html>
