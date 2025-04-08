@@ -8,6 +8,9 @@ from db_config import init_db
 app = Flask(__name__)
 CORS(app)
 mysql = init_db(app)
+@app.route('/')
+def home():
+    return "Welcome to Job Tracker API!"
 
 @app.route('/job', methods=['POST'])
 def add_job():
@@ -68,6 +71,7 @@ def get_jobs_by_status(status):
 
 @app.route('/job/<int:id>', methods=['DELETE'])
 def delete_job(id):
+
     cursor = mysql.connection.cursor()
     # Check if job exists
     cursor.execute("SELECT * FROM jobs WHERE id = %s", (id,))

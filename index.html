@@ -100,7 +100,7 @@
     <h1><i class="fas fa-briefcase"></i> Job Tracker</h1>
 
     <div class="button-group top-buttons">
-      <button type="button" onclick="showAddForm()">Add Job</button>
+      <button type="button" id="showAddBtn">Add Job</button>
       <button type="button" onclick="fetchJobs()">Show Jobs</button>
     </div>
 
@@ -120,8 +120,8 @@
         </select>
         <textarea id="notes" placeholder="Notes (optional)"></textarea>
         <p class="success" id="successMsg"></p>
-        
       </form>
+      
     </div>
 
     <!-- Job List Section -->
@@ -144,28 +144,28 @@
     }
 
     // Submit Form
-    jobForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const job = {
-        company: document.getElementById('company').value,
-        role: document.getElementById('role').value,
-        date: document.getElementById('date').value,
-        status: document.getElementById('status').value,
-        notes: document.getElementById('notes').value
-      };
+    document.getElementById('showAddBtn').addEventListener('click', async () => {
+  const job = {
+    company: document.getElementById('company').value,
+    role: document.getElementById('role').value,
+    date: document.getElementById('date').value,
+    status: document.getElementById('status').value,
+    notes: document.getElementById('notes').value
+  };
 
-      const response = await fetch("http://127.0.0.1:5000/job", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(job)
-      });
+  const response = await fetch("http://127.0.0.1:5000/job", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(job)
+  });
 
-      if (response.ok) {
-        successMsg.textContent = "✅ Job added successfully!";
-        jobForm.reset();
-        setTimeout(() => successMsg.textContent = "", 3000);
-      }
-    });
+  if (response.ok) {
+    successMsg.textContent = "✅ Job added successfully!";
+    jobForm.reset();
+    setTimeout(() => successMsg.textContent = "", 3000);
+  }
+});
+
 
     // Fetch and Show Jobs
     async function fetchJobs() {
