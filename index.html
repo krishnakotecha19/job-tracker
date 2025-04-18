@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f7fa;
+      background: rgb(240, 189, 230);
       margin: 0;
       padding: 0;
     }
@@ -16,7 +16,7 @@
     .main-card {
       max-width: 600px;
       margin: 60px auto;
-      background: #ffffff;
+      background :white;
       padding: 30px 40px;
       border-radius: 20px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
@@ -31,7 +31,7 @@
 
     h1 i {
       margin-right: 10px;
-      color: #3a86ff;
+      color: plum;
     }
 
     input, select, textarea {
@@ -62,8 +62,8 @@
     }
 
     .button-group.top-buttons button {
-      background-color: #3a86ff;
-      color: white;
+      background-color: plum;
+      color: black;
       padding: 12px 20px;
       border-radius: 8px;
       border: none;
@@ -187,7 +187,7 @@
       });
 
       if (response.ok) {
-        successMsg.textContent = "✅ Job added successfully!";
+        successMsg.textContent = " Job added successfully!";
         jobForm.reset();
         setTimeout(() => successMsg.textContent = "", 3000);
       }
