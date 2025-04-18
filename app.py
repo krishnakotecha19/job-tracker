@@ -30,6 +30,7 @@ def add_job():
     return jsonify({"message": "Job added successfully"}), 201
 
 @app.route('/job', methods=['GET'])
+@app.route('/job', methods=['GET'])
 def get_all_jobs():
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM jobs")
@@ -39,16 +40,18 @@ def get_all_jobs():
     jobs = []
     for row in rows:
         jobs.append({
-            "id": row[0],
-            "company": row[1],
-            "role": row[2],
-            "date": row[3].strftime("%Y-%m-%d"),
-            "status": row[4],
-            "notes": row[5]
+            "id": row['id'],
+            "company": row['company'],
+            "role": row['role'],
+            "date": row['date'].strftime("%Y-%m-%d"),
+            "status": row['status'],
+            "notes": row['notes']
         })
 
     return jsonify(jobs), 200
 
+
+@app.route('/job/<status>', methods=['GET'])
 @app.route('/job/<status>', methods=['GET'])
 def get_jobs_by_status(status):
     cursor = mysql.connection.cursor()
@@ -59,15 +62,16 @@ def get_jobs_by_status(status):
     jobs = []
     for row in rows:
         jobs.append({
-            "id": row[0],
-            "company": row[1],
-            "role": row[2],
-            "date": row[3].strftime("%Y-%m-%d"),
-            "status": row[4],
-            "notes": row[5]
+            "id": row['id'],
+            "company": row['company'],
+            "role": row['role'],
+            "date": row['date'].strftime("%Y-%m-%d"),
+            "status": row['status'],
+            "notes": row['notes']
         })
 
     return jsonify(jobs), 200
+
 
 @app.route('/job/<int:id>', methods=['DELETE'])
 def delete_job(id):
