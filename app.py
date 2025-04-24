@@ -7,12 +7,12 @@ from flask_session import Session
 app = Flask(__name__)
 CORS(app)
 
-# --- Session Configuration ---
-app.config['SECRET_KEY'] = 'a3b1c8d4e9f2071a8b5c6d3e2f019476' # Replace with a strong, random key
-app.config['SESSION_TYPE'] = 'filesystem'  # For development; consider other options for production
+
+app.config['SECRET_KEY'] = 'a3b1c8d4e9f2071a8b5c6d3e2f019476' 
+app.config['SESSION_TYPE'] = 'filesystem' 
 Session(app)
 
-# --- Database Configuration ---
+
 app.config['MYSQL_HOST'] = 'shuttle.proxy.rlwy.net'
 app.config['MYSQL_PORT'] = 12271
 app.config['MYSQL_USER'] = 'root'
@@ -25,7 +25,6 @@ mysql = MySQL(app)
 def home():
     return "Welcome to Job Tracker API!"
 
-# --- User Registration Route ---
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -43,6 +42,7 @@ def register():
             return jsonify({"message": "Username already exists"}), 409
 
         hashed_password = generate_password_hash(password)
+        # IMPORTANT CHANGE HERE: Do not include 'id' in the INSERT statement
         cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
         mysql.connection.commit()
         return jsonify({"message": "User registered successfully"}), 201
@@ -77,7 +77,7 @@ def login():
     finally:
         cursor.close()
 
-# --- Your existing routes for /job (POST, GET, DELETE) remain here for now ---
+
 @app.route('/job', methods=['POST'])
 def add_job():
     data = request.get_json()
