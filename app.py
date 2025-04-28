@@ -51,27 +51,23 @@ def add_job():
 
 @app.route('/job', methods=['GET'])
 def get_all_jobs():
-    cursor = mysql.connection.cursor(dictionary=True)
+    cursor = mysql.connection.cursor()
     try:
-        cursor.execute("SELECT * FROM jobs ORDER BY date DESC")
+        cursor.execute("SELECT id, company, role, date, status, notes FROM jobs ORDER BY date DESC")
         rows = cursor.fetchall()
         cursor.close()
 
         jobs = []
         for row in rows:
-            jobs.append({
-                "id": row["id"],
-                "company": row["company"],
-                "role": row["role"],
-                "date": row["date"].strftime("%Y-%m-%d"),
-                "status": row["status"],
-                "notes": row["notes"]
-            })
+            if 'date' in row and row['date']:
+                row['date'] = row['date'].strftime("%Y-%m-%d")
+            jobs.append(row)
         return jsonify(jobs), 200
     except Exception as e:
+        print(f"Error fetching jobs: {str(e)}")
         return jsonify({"message": f"Error fetching jobs: {str(e)}"}), 500
     finally:
-        if 'cursor' in locals() and cursor.open:
+        if 'cursor' in locals():
             cursor.close()
 
 @app.route('/job/<int:id>', methods=['DELETE'])
